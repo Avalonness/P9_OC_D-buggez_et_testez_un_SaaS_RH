@@ -34,12 +34,18 @@ describe("Given I am connected as an employee", () => {
 
     })
     test("Then bills should be ordered from earliest to latest", () => {
-      document.body.innerHTML = BillsUI({ data: bills })
-      const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
-      const antiChrono = (a, b) => ((a < b) ? 1 : -1)
-      const datesSorted = [...dates].sort(antiChrono)
-      expect(dates).toEqual(datesSorted)
-    })
+      document.body.innerHTML = BillsUI({ data: bills });
+    
+      const dateRegex = /\d{1,2}\s(?:Jan|Fév|Mar|Avr|Mai|Juin|Juil|Août|Sept|Oct|Nov|Déc)\.\s\d{2}/i;
+      const dateElements = Array.from(document.querySelectorAll("td")).filter((element) => {
+        return element.textContent.match(dateRegex);
+      });
+    
+      const dates = dateElements.map((element) => convertDate(element.textContent));
+      const antiChrono = (a, b) => ((a < b) ? 1 : -1);
+      const datesSorted = [...dates].sort(antiChrono);
+      expect(dates).toEqual(datesSorted);
+    });
     test("When i click on the eye button, Then modal should be open up ", async () => {
       document.body.innerHTML = BillsUI({ data: bills })
       const store = jest.fn()

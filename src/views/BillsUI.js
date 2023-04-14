@@ -19,27 +19,38 @@ const row = (bill) => {
     `)
   }
 
-const rows = (data) => {
-
-  // On tri les bills ici par la date.
-  // La méthode de sort avec New Date ne fonctionnant pas,
-  // je suis passé par la méthode compare avec les opérateurs > et < pour comparer les dates. 
-
-    if(data && data.length){
-    data.sort( function compare(a, b) {
-    if (a.date < b.date) {
-      return 1;
-    }
-    if (a.date > b.date) {
-      return -1;
-    }
-    return 0;
-  });
+  function convertDate(dateStr) {
+    const months = {
+      'Jan.': '01',
+      'Fév.': '02',
+      'Mars': '03',
+      'Avr.': '04',
+      'Mai.': '05',
+      'Jui.': '06',
+      'Juil.': '07',
+      'Août': '08',
+      'Sep.': '09',
+      'Oct.': '10',
+      'Nov.': '11',
+      'Déc.': '12'
+    };
+  
+    const [day, month, year] = dateStr.split(' ');
+    return `20${year}-${months[month]}-${day.padStart(2, '0')}`;
   }
 
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+  const rows = (data) => {
+  console.log(data)
+  return (data && data.length) ? 
+    data.sort((a, b) => {
+      const dateA = new Date(convertDate(a.date))
+      const dateB = new Date(convertDate(b.date))
+      return dateA < dateB ? -1 : 1
+    }).map(bill => 
+      row(bill)
+    ).join("") : ""
 }
-
+  
 export default ({ data: bills, loading, error }) => {
   
   const modal = () => (`
